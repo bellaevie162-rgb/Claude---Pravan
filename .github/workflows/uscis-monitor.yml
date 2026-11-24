@@ -1,8 +1,10 @@
 name: USCIS case status monitor
 
+# Schedule removed: USCIS blocks requests from GitHub's servers (HTTP 403).
+# Only manual runs are possible now. To re-enable automatic checks, add back:
+#   schedule:
+#     - cron: "17,47 * * * *"
 on:
-  schedule:
-    - cron: "17,47 * * * *"   # every 30 minutes (GitHub may delay scheduled runs)
   workflow_dispatch:           # "Run workflow" button for a manual check
 
 concurrency:

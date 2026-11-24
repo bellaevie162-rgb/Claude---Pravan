@@ -1,5 +1,7 @@
 # USCIS Case Status Monitor
 
+> **Status: paused.** USCIS blocks requests from GitHub's servers (HTTP 403), so the automatic schedule has been removed. The script can still be run from a home computer. See "Run it locally instead" below.
+
 A small bot that checks your USCIS case status every 30 minutes and **emails and/or texts you when the status changes**. It runs free on GitHub Actions, so nothing has to stay running on your computer.
 
 Your receipt number and passwords are stored as **GitHub Secrets**, not in the code. The last-seen status lives in the Actions cache, not in the repo.
