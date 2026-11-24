@@ -33,7 +33,7 @@ Go to **Settings → Secrets and variables → Actions → New repository secret
 
 ### 3. Turn it on
 1. Open the **Actions** tab and enable workflows if GitHub asks.
-2. Choose **USCIS case status monitor → Run workflow** to test it right away. You should get a "Current status" email.
+2. On a phone, tap the ◧ icon next to "All workflows" to see the list. Choose **USCIS case status monitor → Run workflow** to test it right away. You should get a "Current status" email.
 3. After that it runs by itself every 30 minutes and only messages you when something changes.
 
 ## Run it locally instead
