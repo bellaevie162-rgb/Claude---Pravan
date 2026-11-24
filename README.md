@@ -49,3 +49,21 @@ Use cron (`*/30 * * * * cd /path && python3 uscis_monitor.py`) to repeat it. It 
 - GitHub can delay scheduled runs by a few minutes, and it pauses schedules in repos that have had no activity for 60 days. If that happens, re-enable the workflow in the Actions tab.
 - USCIS sometimes blocks requests from cloud servers. If the Actions log shows errors on every run, run the script from your own computer with cron.
 - USCIS also offers free official email/text updates if you create a USCIS online account at <https://my.uscis.gov>. It's worth turning on as a backup.
+
+
+---
+
+# DACA Watch
+
+A daily email digest of new DACA developments. **Path to citizenship** news (Dream Act, green cards, legalization bills) is flagged and listed first.
+
+**Sources** are all free and public, with no login:
+- Federal Register: official USCIS/DHS rules and notices
+- CourtListener: new court opinions mentioning DACA
+- Google News: coverage of Congress, the courts, USCIS and politics
+
+**Setup:** it uses the same email secrets as the USCIS bot (`SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_TO`, plus `SMTP_HOST`/`SMTP_PORT` if you're not on Gmail). It runs every morning and only emails you when something new appears. The first email covers the past 2 weeks.
+
+**Test it:** Actions → DACA watch → Run workflow. Tick "dry run" to see the digest in the log without sending an email.
+
+Headlines are sorted by keywords, not read for meaning, so open the link before relying on anything. Talk to an immigration attorney or a DOJ-accredited representative before acting on any news.
