@@ -47,6 +47,13 @@ COURT_RE = re.compile(r"court|judge|ruling|ruled|lawsuit|appeal|texas v\.|injunc
 CONGRESS_RE = re.compile(r"congress|senate|house|bill|legislat|lawmaker|senator|representative", re.I)
 AGENCY_RE = re.compile(r"uscis|dhs|homeland security|renewal|work permit|federal register|rule\b|regulation", re.I)
 
+# A news headline must match this to be included (filters off-topic stories).
+RELEVANT_RE = re.compile(
+    r"\bDACA\b|dreamer|dream act|deferred action|childhood arrival|amnesty|"
+    r"legal status|citizenship|legaliz|undocumented (students|youth|immigrants brought)",
+    re.I,
+)
+
 NEWS_QUERIES = [
     '"DACA"',
     '"Deferred Action for Childhood Arrivals"',
@@ -124,6 +131,8 @@ def google_news(days: int) -> list[dict]:
         root = ET.fromstring(fetch(url))
         for it in root.iter("item"):
             title = clean(it.findtext("title"))
+            if not RELEVANT_RE.search(title):
+                continue
             # Same story often appears under several queries; dedupe on headline.
             key = re.sub(r"[^a-z0-9]", "", title.lower().rsplit(" - ", 1)[0])[:80]
             if not key or key in out:
@@ -250,13 +259,17 @@ def main() -> int:
         return 1
 
     new = [it for it in items if it["id"] not in seen]
-    print(f"{len(new)} new item(s)")
+    counts = {}
+    for it in new:
+        counts[categorize(it)] = counts.get(categorize(it), 0) + 1
+    print(f"{len(new)} new item(s): {counts}")
     if new:
         subject, body = build_digest(new)
         if first_run:
             subject += " — first run, past 2 weeks"
         if os.getenv("DRY_RUN") == "1":
             print(subject + "\n\n" + body)
+            print(f"\n[summary] {len(new)} new item(s): {counts}")
         else:
             send_email(subject, body)
             print("Email sent.")
