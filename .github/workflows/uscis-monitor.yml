@@ -1,0 +1,51 @@
+name: USCIS case status monitor
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"   # every 30 minutes (GitHub may delay scheduled runs)
+  workflow_dispatch:           # "Run workflow" button for a manual check
+
+concurrency:
+  group: uscis-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Last-seen status is kept in the Actions cache (not committed), so the
+      # case details never end up in the repository's history.
+      - name: Restore last status
+        uses: actions/cache/restore@v4
+        with:
+          path: state.json
+          key: uscis-state-${{ github.run_id }}
+          restore-keys: uscis-state-
+
+      - name: Check case status
+        env:
+          CASE_NUMBERS: ${{ secrets.CASE_NUMBERS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM: ${{ secrets.TWILIO_FROM }}
+          SMS_TO: ${{ secrets.SMS_TO }}
+        run: python uscis_monitor.py
+
+      - name: Save status
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state.json
+          key: uscis-state-${{ github.run_id }}
