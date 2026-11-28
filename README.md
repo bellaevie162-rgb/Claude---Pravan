@@ -67,3 +67,13 @@ A daily email digest of new DACA developments. **Path to citizenship** news (Dre
 **Test it:** Actions → DACA watch → Run workflow. Tick "dry run" to see the digest in the log without sending an email.
 
 Headlines are sorted by keywords, not read for meaning, so open the link before relying on anything. Talk to an immigration attorney or a DOJ-accredited representative before acting on any news.
+
+---
+
+# Dignity Act Watch (bill alerts)
+
+Emails you whenever **H.R. 4393, the DIGNIDAD (Dignity) Act of 2025**, changes on Congress.gov: new actions (committee referrals, hearings, votes, passage), cosponsors joining or withdrawing, new bill text versions, amendments, official summaries, or a title change. It also adds new news headlines that mention the Dignity Act. Runs daily around 9:40am Eastern.
+
+- **Watch more bills:** in repo **Settings → Secrets and variables → Actions → Variables**, add a variable `BILLS`, e.g. `119/hr/4393,119/s/1234` (congress/type/number).
+- **Optional:** add a free Congress.gov API key from <https://api.congress.gov/sign-up/> as the secret `CONGRESS_API_KEY`. Without one, it uses a shared demo key that can occasionally hit its rate limit.
+- **Note:** bills that don't pass expire when a Congress ends (January 3, 2027). If the Dignity Act is reintroduced in the 120th Congress, it'll get a new number. Update `BILLS` with the new number then.
