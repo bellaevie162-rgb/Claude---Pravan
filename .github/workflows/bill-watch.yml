@@ -1,0 +1,53 @@
+name: Dignity Act watch
+
+on:
+  schedule:
+    - cron: "41 14 * * *"   # once a day, ~9:41am Eastern
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Test only: print to the log, don't email"
+        type: boolean
+        default: false
+
+concurrency:
+  group: bill-watch
+  cancel-in-progress: false
+
+env:
+  # Bills to watch (congress/type/number). Public info, so it lives here, not in secrets.
+  # Add more with commas, e.g. "119/hr/4393,119/s/1234". Override with a repo variable named BILLS.
+  BILLS: ${{ vars.BILLS || '119/hr/4393' }}
+  BILL_NEWS_QUERY: ${{ vars.BILL_NEWS_QUERY || '"Dignity Act" immigration' }}
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore last snapshot
+        uses: actions/cache/restore@v4
+        with:
+          path: bill_state.json
+          key: bill-state-${{ github.run_id }}
+          restore-keys: bill-state-
+      - name: Check bills
+        env:
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: python bill_watch.py
+      - name: Save snapshot
+        if: success() && !inputs.dry_run
+        uses: actions/cache/save@v4
+        with:
+          path: bill_state.json
+          key: bill-state-${{ github.run_id }}

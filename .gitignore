@@ -2,3 +2,4 @@ state.json
 __pycache__/
 .env
 daca_state.json
+bill_state.json
